@@ -5,12 +5,23 @@ from django.db import models
 class CustomUser(AbstractUser):
     """Кастомная модель пользователя."""
 
-    email = models.EmailField('Почта', unique=True, max_length=150,
-                              blank=False, null=False)
-    first_name = models.TextField('Имя', max_length=150,
-                                  blank=False, null=False)
-    last_name = models.TextField('Фамилия', max_length=150,
-                                 blank=False, null=False)
+    email = models.EmailField(
+        'Адрес электронной почты', unique=True, max_length=254,
+        blank=False, null=False,
+        help_text='Обязательное поле. Не более 254 символов.'
+    )
+    first_name = models.TextField(
+        'Имя', max_length=150, blank=False, null=False,
+        help_text='Обязательное поле. Не более 150 символов.'
+    )
+    last_name = models.TextField(
+        'Фамилия', max_length=150, blank=False, null=False,
+        help_text='Обязательное поле. Не более 150 символов.'
+    )
+    # is_subscribed = models.BooleanField(
+    #    'Подписан ли текущий пользователь на этого',
+    #    blank=False, null=False, default=False
+    # )
 
     class Meta:
         constraints = [
