@@ -18,10 +18,6 @@ class CustomUser(AbstractUser):
         'Фамилия', max_length=150, blank=False, null=False,
         help_text='Обязательное поле. Не более 150 символов.'
     )
-    # is_subscribed = models.BooleanField(
-    #    'Подписан ли текущий пользователь на этого',
-    #    blank=False, null=False, default=False
-    # )
 
     class Meta:
         constraints = [
@@ -36,3 +32,22 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE,
+        related_name='follower', verbose_name='Подписчик')
+    following = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE,
+        related_name='following', verbose_name='Автор, на которого подписан')
+
+    class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'following'],
+                name='unique_pair_user_following'
+            )
+        ]

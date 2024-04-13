@@ -14,12 +14,9 @@ class CustomUserAdmin(UserAdmin):
                     'is_staff',)
     list_editable = ('is_staff',)
     search_fields = ('username',)
-    list_filter = ('is_staff',)
+    list_filter = ('username',
+                   'email',)
     list_display_links = ('username',)
-
-    # @admin.display(description='Добавлено рецептов')
-    # def amount_review(self, obj):
-    #    return obj.reviews.count()
 
 
 admin.site.unregister(Group)
