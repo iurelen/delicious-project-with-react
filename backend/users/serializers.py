@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
@@ -13,9 +14,9 @@ class ValidateUsernameMixin:
 
     def validate_username(self, value):
         if (
-            value == 'me' or
-            value == 'set_password' or
-            value == 'subscriptions'
+            value == 'me'
+            or value == 'set_password'
+            or value == 'subscriptions'
         ):
             raise serializers.ValidationError(
                 'Некорректное имя пользователя.')

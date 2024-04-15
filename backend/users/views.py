@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+
 from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, AllowAny, IsAuthenticated
@@ -68,7 +69,7 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def subscriptions(self, request):
         pages = self.paginate_queryset(
-             self.request.user.follower.order_by('-id')
+            self.request.user.follower.order_by('-id')
         )
         serializer = SubscriptionsSerializer(
             pages, many=True,

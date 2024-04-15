@@ -1,11 +1,12 @@
 import io
 
-import reportlab.rl_config
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
+
+import reportlab.rl_config
 from django_filters.rest_framework import DjangoFilterBackend
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -141,7 +142,7 @@ class ShoppingCartView(APIView):
         serializer.is_valid(raise_exception=True)
         recipe = get_object_or_404(Recipe, id=recipe_id)
         if request.user.shopping_cart.filter(
-             recipe_in_cart_id=recipe_id
+            recipe_in_cart_id=recipe_id
         ).exists():
             return Response(
                 {
