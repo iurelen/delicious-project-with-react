@@ -1,28 +1,13 @@
 import base64
-import webcolors
+
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from rest_framework import serializers
-# from rest_framework.validators import UniqueValidator
 
-from .models import (
-    Favorite, Ingredient, ShoppingCart, Recipe, RecipeIngredient, RecipeTag,
-    Tag
-)
+from .models import (Favorite, Ingredient, Recipe, RecipeIngredient, RecipeTag,
+                     ShoppingCart, Tag)
 
 User = get_user_model()
-
-
-class Hex2NameColor(serializers.Field):
-    def to_representation(self, value):
-        return value
-
-    def to_internal_value(self, data):
-        try:
-            data = webcolors.hex_to_name(data)
-        except ValueError:
-            raise serializers.ValidationError('Для этого цвета нет имени')
-        return data
 
 
 class Base64ImageField(serializers.ImageField):
@@ -37,7 +22,6 @@ class Base64ImageField(serializers.ImageField):
 
 
 class TagSerializer(serializers.ModelSerializer):
-    # color = Hex2NameColor()
 
     class Meta:
         model = Tag
@@ -56,8 +40,6 @@ class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'email', 'username', 'first_name', 'last_name',)
-        # read_only_fields = '__all__'
-    # "is_subscribed": false
 
 
 class RecipeGetIngredientSerializer(serializers.ModelSerializer):
@@ -161,14 +143,15 @@ class RecipePostSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
         instance.text = validated_data.get('text', instance.text)
-        instance.birth_year = validated_data.get(
+        instance.cooking_time = validated_data.get(
             'cooking_time', instance.cooking_time
         )
         instance.image = validated_data.get('image', instance.image)
 
         if 'tags' not in validated_data:
-            instance.save()
-            return instance
+            raise serializers.ValidationError(
+                'Необходимо выбрать теги.'
+            )
 
         tags = validated_data.pop('tags')
         instance.tags.clear()
@@ -178,8 +161,9 @@ class RecipePostSerializer(serializers.ModelSerializer):
             )
 
         if 'ingredients' not in validated_data:
-            instance.save()
-            return instance
+            raise serializers.ValidationError(
+                'Необходимо указать ингредиенты.'
+            )
 
         ingredients = validated_data.pop('ingredients')
         instance.ingredients.clear()
@@ -238,34 +222,24 @@ class RecipePostSerializer(serializers.ModelSerializer):
 class FavoriteSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='favorite_recipe.id')
     name = serializers.ReadOnlyField(source='favorite_recipe.name')
-    image = serializers.ReadOnlyField(source='favorite_recipe.image')
+    image = Base64ImageField(source='favorite_recipe.image', read_only=True)
     cooking_time = serializers.ReadOnlyField(
         source='favorite_recipe.cooking_time'
     )
 
     class Meta:
         model = Favorite
-        # fields = ('id', 'name', 'cooking_time')
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='recipe_in_cart.id')
     name = serializers.ReadOnlyField(source='recipe_in_cart.name')
-    # image = serializers.ReadOnlyField(source='recipe_in_cart.image')
+    image = Base64ImageField(source='recipe_in_cart.image', read_only=True)
     cooking_time = serializers.ReadOnlyField(
         source='recipe_in_cart.cooking_time'
     )
 
     class Meta:
         model = ShoppingCart
-        fields = ('id', 'name', 'cooking_time')
-        # fields = ('id', 'name', 'image', 'cooking_time')
-        # validators = [
-        #    UniqueTogetherValidator(
-        #        queryset=ShoppingCart.objects.all(),
-        #        fields=('recipe_in_cart', 'user',)
-        #    )
-        # ]
-
-        # "__all__" 'ingredient'
+        fields = ('id', 'name', 'image', 'cooking_time')

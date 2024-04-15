@@ -1,0 +1,10 @@
+venv
+.git
+db.sqlite3
+
+# файлы IDE
+.idea
+.vscode
+
+# файлы с переменными окружения
+.env

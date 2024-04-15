@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from recipes.models import Recipe
+
 from .models import Follow
 
 User = get_user_model()
@@ -23,11 +24,6 @@ class ValidateUsernameMixin:
 
 class UserPostSerializer(serializers.ModelSerializer,
                          ValidateUsernameMixin):
-    # password = serializers.CharField(
-    #    min_length=8, max_length=150, write_only=True, required=True,
-    #    style={'input_type': 'password'},
-    #    help_text='Обязательное поле. От 8 до 150 символов.'
-    # )
 
     class Meta:
         model = User
@@ -126,7 +122,6 @@ class SubscriptionsSerializer(serializers.ModelSerializer):
         return True
 
     def get_recipes(self, obj):
-        # recipes_limit
         queryset = Recipe.objects.filter(author=obj.following)
         request = self.context.get('request')
         value = request.GET.get('recipes_limit')

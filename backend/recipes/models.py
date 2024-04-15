@@ -11,7 +11,6 @@ class Tag(models.Model):
     color = models.CharField(
         'Цвет', max_length=7, blank=False, null=True
     )
-    # #ffff00 #00ff00
     slug = models.SlugField(
         'Слаг', max_length=200, unique=True, blank=False, null=True
     )
@@ -27,10 +26,10 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     name = models.CharField(
-        'Название', max_length=24, unique=True, blank=False, null=False
+        'Название', max_length=200, blank=False, null=False
     )
     measurement_unit = models.CharField(
-        'Единица измерения', max_length=16, blank=False, null=False
+        'Единица измерения', max_length=200, blank=False, null=False
     )
 
     def __str__(self):
@@ -61,11 +60,10 @@ class Recipe(models.Model):
         'Время приготовления в минутах', blank=False, null=False
     )
     tags = models.ManyToManyField(
-        Tag, through='RecipeTag', verbose_name='тег', blank=False
+        Tag, through='RecipeTag', verbose_name='тег'
     )
     ingredients = models.ManyToManyField(
-        Ingredient, through='RecipeIngredient', verbose_name='ингредиент',
-        blank=False
+        Ingredient, through='RecipeIngredient', verbose_name='ингредиент'
     )
 
     def __str__(self):

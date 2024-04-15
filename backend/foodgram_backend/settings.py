@@ -5,17 +5,19 @@ Django settings for foodgram_backend project.
 
 import os
 from datetime import timedelta
-from pathlib import Path
 
-# BASE_DIR = Path(__file__).resolve().parent.parent
+from environs import Env
+
+env = Env()
+env.read_env()
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'django-insecure-c)dm5l!_^o-sw4soe=k@v5en&xiug69k^eql@zlrtu2dh3m%)_'
+SECRET_KEY = env.str('SECRET_KEY', default='django-insecure-cg6')
 
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default='localhost')
 
 # Application definition
 
@@ -69,9 +71,12 @@ WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
-        'NAME': 'db.sqlite3'
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'django'),
+        'USER': os.getenv('POSTGRES_USER', 'django'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', ''),
+        'PORT': os.getenv('DB_PORT', 5432)
     }
 }
 
@@ -98,8 +103,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# LANGUAGE_CODE = 'ru-RU'
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'UTC'
 
@@ -112,18 +116,19 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-# STATIC_ROOT = BASE_DIR / 'collected_static'
-STATIC_ROOT = 'collected_static'
+STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = '/media/'
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny', 
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],

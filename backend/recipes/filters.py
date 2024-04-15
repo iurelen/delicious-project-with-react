@@ -1,16 +1,17 @@
 import django_filters
-from recipes.models import Recipe
+
+from recipes.models import Recipe, Tag
 
 
 class RecipeFilter(django_filters.FilterSet):
 
-    tags = django_filters.CharFilter(
+    tags = django_filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
-        # lookup_expr='icontains',
+        queryset=Tag.objects.all(),
+        to_field_name='slug',
     )
     author = django_filters.CharFilter(
         field_name='author__id',
-        # lookup_expr='icontains',
     )
     is_favorited = django_filters.NumberFilter(
         method='filter_is_favorited'

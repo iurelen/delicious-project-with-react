@@ -2,34 +2,27 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated, SAFE_METHODS
+from rest_framework.permissions import SAFE_METHODS, AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import Follow
 from .paginations import CustomPagination
-from .serializers import (
-    SubscriptionsSerializer, SetPasswordSerializer,
-    TokenObtainSerializer, UserGetSerializer, UserPostSerializer
-)
+from .serializers import (SetPasswordSerializer, SubscriptionsSerializer,
+                          TokenObtainSerializer, UserGetSerializer,
+                          UserPostSerializer)
 
 User = get_user_model()
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    # lookup_field = 'username'
     queryset = User.objects.order_by('-id')
     serializer_class = UserPostSerializer
-    # permission_classes = (IsAdminOrSuperuser,)
-    # permission_classes = (IsAuthenticated,)
     permission_classes = (AllowAny,)
     pagination_class = CustomPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
-    # http_method_names = [
-    #    'get', 'post', 'patch', 'head', 'options', 'trace'
-    # ]
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
@@ -43,9 +36,6 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def me(self, request):
         user = self.request.user
-        # serializer = UserGetSerializer(user, data=request.data, partial=True)
-        # serializer.is_valid(raise_exception=True)
-        # serializer.save()
         serializer = UserGetSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -53,7 +43,6 @@ class UserViewSet(viewsets.ModelViewSet):
         methods=['post'],
         detail=False,
         permission_classes=(IsAuthenticated,),
-        # permission_classes=(IsAdminOrIsSelf,)
         serializer_class=SetPasswordSerializer()
     )
     def set_password(self, request):
@@ -78,22 +67,16 @@ class UserViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def subscriptions(self, request):
-        queryset = self.request.user.follower.order_by('-id')
+        pages = self.paginate_queryset(
+             self.request.user.follower.order_by('-id')
+        )
         serializer = SubscriptionsSerializer(
-            queryset, many=True,
+            pages, many=True,
             context={'request': request}
         )
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    # def subscriptions(self, request):
-    #    pages = self.paginate_queryset(
-    #         self.request.user.follower.all()
-    #    )
-    #    serializer = SubscriptionsSerializer(
-    #        pages, many=True,
-    #        context={'request': request}
-    #    )
-    #    return self.get_paginated_response(serializer.data)
+        return self.get_paginated_response(
+            serializer.data
+        )
 
 
 class SubscriptionsViewSet(mixins.ListModelMixin,
@@ -135,7 +118,6 @@ class TokenObtainView(APIView):
 
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)
-    # permission_classes = (AllowAny,)
 
     def post(self, request):
         user = self.request.user
@@ -149,8 +131,6 @@ class LogoutView(APIView):
 
 class FollowView(APIView):
     permission_classes = (IsAuthenticated,)
-    # filter_backends = (filters.SearchFilter,)
-    # search_fields = ('following__username',)
 
     def post(self, request, user_id):
         following = get_object_or_404(User, id=user_id)

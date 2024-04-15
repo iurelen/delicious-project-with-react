@@ -1,8 +1,9 @@
 import io
+
 import reportlab.rl_config
-from django.db.models import Sum
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -11,24 +12,19 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import (
-    IsAuthenticated, SAFE_METHODS
-)
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.paginations import CustomPagination
 
 from .filters import RecipeFilter
-from .models import (
-    Ingredient, Favorite, ShoppingCart, Recipe, RecipeIngredient, Tag
-)
+from .models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                     ShoppingCart, Tag)
 from .permissions import IsAuthorOrAdminOrReadOnly
-from .serializers import (
-    FavoriteSerializer, IngredientSerializer, ShoppingCartSerializer,
-    RecipePostSerializer, RecipeGetSerializer, TagSerializer
-)
-
+from .serializers import (FavoriteSerializer, IngredientSerializer,
+                          RecipeGetSerializer, RecipePostSerializer,
+                          ShoppingCartSerializer, TagSerializer)
 
 reportlab.rl_config.warnOnMissingFontGlyphs = 0
 reportlab.rl_config.TTFSearchPath.append(
@@ -39,7 +35,6 @@ pdfmetrics.registerFont(TTFont('DejaVuSerif', 'DejaVuSerif.ttf', 'UTF-8'))
 User = get_user_model()
 
 
-# class TagViewSet(viewsets.ModelViewSet):
 class TagViewSet(mixins.ListModelMixin,
                  mixins.RetrieveModelMixin,
                  viewsets.GenericViewSet):
@@ -48,7 +43,6 @@ class TagViewSet(mixins.ListModelMixin,
     pagination_class = None
 
 
-# class IngredientViewSet(viewsets.ModelViewSet):
 class IngredientViewSet(mixins.ListModelMixin,
                         mixins.RetrieveModelMixin,
                         viewsets.GenericViewSet):
@@ -62,12 +56,10 @@ class IngredientViewSet(mixins.ListModelMixin,
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.order_by('-id')
     serializer_class = RecipePostSerializer
-    # permission_classes = (IsAuthenticatedOrReadOnly,)
     permission_classes = (IsAuthorOrAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     pagination_class = CustomPagination
     filterset_class = RecipeFilter
-    # search_fields = ('author_id',)
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
@@ -116,8 +108,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 class FavoriteView(APIView):
     permission_classes = (IsAuthenticated,)
-    # filter_backends = (filters.SearchFilter,)
-    # search_fields = ('following__username',)
 
     def post(self, request, recipe_id):
         recipe = get_object_or_404(Recipe, id=recipe_id)
@@ -145,19 +135,17 @@ class FavoriteView(APIView):
 
 class ShoppingCartView(APIView):
     permission_classes = (IsAuthenticated,)
-    # filter_backends = (filters.SearchFilter,)
-    # search_fields = ('following__username',)
 
     def post(self, request, recipe_id):
-        recipe = get_object_or_404(Recipe, id=recipe_id)
         serializer = ShoppingCartSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        recipe = get_object_or_404(Recipe, id=recipe_id)
         if request.user.shopping_cart.filter(
              recipe_in_cart_id=recipe_id
         ).exists():
             return Response(
                 {
-                    'errors': 'Рецепт уже есть в избранном.',
+                    'errors': 'Рецепт уже есть в корзине.',
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
