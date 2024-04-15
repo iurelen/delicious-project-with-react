@@ -61,6 +61,4 @@ python3 manage.py runserver
 ```
 
 ## API
-Техническая документация по API YaMDb доступна по адресу [http://127.0.0.1:8000/redoc/](http://127.0.0.1:8000/redoc/).
- [http://localhost/api/docs/] - docker
-### Примеры запросов к API
+Техническая документация по API доступна по адресу [http://127.0.0.1:8000/redoc/](http://127.0.0.1:8000/redoc/).
