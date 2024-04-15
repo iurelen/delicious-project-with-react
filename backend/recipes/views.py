@@ -50,7 +50,7 @@ class IngredientViewSet(mixins.ListModelMixin,
     queryset = Ingredient.objects.order_by('id')
     serializer_class = IngredientSerializer
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('name',)
+    filterset_fields = ('^name',)
     pagination_class = None
 
 
