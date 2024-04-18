@@ -1,22 +1,24 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from foodgram_backend.constants import LONG_FIELD, SHORT_FIELD
+
 
 class CustomUser(AbstractUser):
     """Кастомная модель пользователя."""
 
     email = models.EmailField(
-        'Адрес электронной почты', unique=True, max_length=254,
+        'Адрес электронной почты', unique=True, max_length=LONG_FIELD,
         blank=False, null=False,
-        help_text='Обязательное поле. Не более 254 символов.'
+        help_text=f'Обязательное поле. Не более {LONG_FIELD} символов.'
     )
     first_name = models.TextField(
-        'Имя', max_length=150, blank=False, null=False,
-        help_text='Обязательное поле. Не более 150 символов.'
+        'Имя', max_length=SHORT_FIELD, blank=False, null=False,
+        help_text=f'Обязательное поле. Не более {SHORT_FIELD} символов.'
     )
     last_name = models.TextField(
-        'Фамилия', max_length=150, blank=False, null=False,
-        help_text='Обязательное поле. Не более 150 символов.'
+        'Фамилия', max_length=SHORT_FIELD, blank=False, null=False,
+        help_text=f'Обязательное поле. Не более {SHORT_FIELD} символов.'
     )
 
     class Meta:
@@ -49,5 +51,9 @@ class Follow(models.Model):
             models.UniqueConstraint(
                 fields=['user', 'following'],
                 name='unique_pair_user_following'
-            )
+            ),
+            models.CheckConstraint(
+                check=~models.Q(user=models.F('following')),
+                name='forbid_subscribe_to_yourself',
+            ),
         ]

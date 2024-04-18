@@ -2,16 +2,15 @@ from django.urls import include, path
 
 from rest_framework.routers import DefaultRouter
 
-from recipes.views import (FavoriteView, IngredientViewSet, RecipeViewSet,
-                           ShoppingCartView, TagViewSet)
-from users.views import FollowView, LogoutView, TokenObtainView, UserViewSet
+from .views import (IngredientViewSet, LogoutView, RecipeViewSet, TagViewSet,
+                    TokenObtainView, UserViewSet)
 
 app_name = 'api'
 
 router = DefaultRouter()
-router.register('users', UserViewSet, basename='users')
-router.register('tags', TagViewSet, basename='tags')
-router.register('ingredients', IngredientViewSet, basename='ingredients')
+router.register('users', UserViewSet)
+router.register('tags', TagViewSet)
+router.register('ingredients', IngredientViewSet)
 router.register('recipes', RecipeViewSet)
 
 token_urls = [
@@ -21,13 +20,5 @@ token_urls = [
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('auth/token/', include(token_urls)),
-    path('users/<int:user_id>/subscribe/',
-         FollowView.as_view(), name='subscribe'),
-    path('recipes/<int:recipe_id>/favorite/',
-         FavoriteView.as_view(), name='favorite'),
-    path('recipes/<int:recipe_id>/shopping_cart/',
-         ShoppingCartView.as_view(), name='shopping_cart'),
+    path('auth/token/', include(token_urls))
 ]
-
-# flushexpiredtokens
