@@ -20,6 +20,8 @@ class CustomUser(AbstractUser):
         'Фамилия', max_length=SHORT_FIELD, blank=False, null=False,
         help_text=f'Обязательное поле. Не более {SHORT_FIELD} символов.'
     )
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ('username', 'password', 'first_name', 'last_name')
 
     class Meta:
         constraints = [

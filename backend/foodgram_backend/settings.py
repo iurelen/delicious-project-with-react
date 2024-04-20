@@ -29,8 +29,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework_simplejwt',
-    'rest_framework_simplejwt.token_blacklist',
+    'rest_framework.authtoken',
+    'djoser',
     'django_filters',
     'colorfield',
     'api.apps.ApiConfig',
@@ -72,12 +72,14 @@ WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'django'),
-        'USER': os.getenv('POSTGRES_USER', 'django'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', ''),
-        'PORT': os.getenv('DB_PORT', 5432)
+        # 'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': os.getenv('POSTGRES_DB', 'django'),
+        # 'USER': os.getenv('POSTGRES_USER', 'django'),
+        # 'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+        # 'HOST': os.getenv('DB_HOST', ''),
+        # 'PORT': os.getenv('DB_PORT', 5432)
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'db.sqlite3',
     }
 }
 
@@ -131,7 +133,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny', 
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.UserRateThrottle',
@@ -143,9 +145,4 @@ REST_FRAMEWORK = {
     },
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 6,
-}
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
-    'AUTH_HEADER_TYPES': ('Token',),
 }

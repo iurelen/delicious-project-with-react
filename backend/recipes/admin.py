@@ -47,7 +47,7 @@ class RecipeTagAdmin(admin.ModelAdmin):
     list_display = ('recipe', 'tag',)
     list_filter = ('recipe',)
     ordering = ('recipe',)
-    search_fields = ('recipe',)
+    search_fields = ('recipe__name', 'tag__name')
     list_display_links = ('recipe',)
     list_editable = ('tag',)
 
@@ -58,7 +58,7 @@ class RecipeIngredientAdmin(admin.ModelAdmin):
     list_display = ('recipe', 'ingredient', 'amount')
     list_filter = ('recipe',)
     ordering = ('recipe',)
-    search_fields = ('recipe',)
+    search_fields = ('recipe__name', 'ingredient__name')
     list_display_links = ('recipe',)
     list_editable = ('ingredient', 'amount',)
 
@@ -71,7 +71,7 @@ class RecipeAdmin(admin.ModelAdmin):
     ]
     list_display = ('name', 'author', 'tags_name',
                     'ingredients_name', 'favorite_count')
-    search_fields = ('username',)
+    search_fields = ('author__username', 'name',)
     list_filter = ('name', 'author', 'tags')
     filter_horizontal = ('tags',)
     list_display_links = ('name',)
@@ -104,7 +104,7 @@ class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('user', 'recipe',)
     list_filter = ('user',)
     ordering = ('user',)
-    search_fields = ('recipe', 'user')
+    search_fields = ('recipe__name', 'user__username')
     list_display_links = ('user',)
     list_editable = ('recipe',)
 
@@ -115,7 +115,7 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = ('user', 'recipe',)
     list_filter = ('user',)
     ordering = ('user',)
-    search_fields = ('recipe', 'user')
+    search_fields = ('recipe__name', 'user__username')
     list_display_links = ('user',)
     list_editable = ('recipe',)
 

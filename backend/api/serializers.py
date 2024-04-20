@@ -130,12 +130,19 @@ class SubscriptionsSerializer(serializers.ModelSerializer):
         serializer = UserRecipeSerializer(queryset, many=True)
         return serializer.data
 
+    def validate(self, data):
+        user = self.context['request'].user
+        following = self.context.get('following')
+        if following == user:
+            raise serializers.ValidationError(
+                'Нельзя подписаться на самого себя.'
+            )
 
-class TokenObtainSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ('email', 'password')
+        if user.follower.filter(following=following).exists():
+            raise serializers.ValidationError(
+                'Подписка уже создана.'
+            )
+        return data
 
 
 class TagSerializer(serializers.ModelSerializer):
