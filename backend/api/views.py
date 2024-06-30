@@ -53,6 +53,7 @@ class UserViewSet(viewsets.ModelViewSet):
     search_fields = ('username',)
 
     def get_serializer_class(self):
+        # print(self.request.data)
         if self.request.method in SAFE_METHODS:
             return UserGetSerializer
         return UserPostSerializer

@@ -1,13 +1,3 @@
-### Info
-url: https://tabularasa.hopto.org/
-
-email: superuser@example.com
-
-username: useradmin
-
-password: Change_me!
-
-
 # Фудграм
 Проект "Фудграм" - это готовый сайт, где можно делиться своими любимыми рецептами и находить новые интересные блюда. 
 На этом сайте аутентифицированные пользователи могут:
